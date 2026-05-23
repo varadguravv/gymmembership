@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}Memberships{% endblock %}
+{% block page_title %}Memberships{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h5 class="section-title mb-0">Memberships</h5>
+    <small class="text-muted">Manage member subscriptions</small>
+  </div>
+  <a href="{{ url_for('add_membership') }}" class="btn btn-gym">
+    <i class="bi bi-plus-circle-fill me-2"></i>New Membership
+  </a>
+</div>
+
+<!-- Filter Tabs -->
+<ul class="nav nav-pills mb-3">
+  {% for s in [('all','All'),('active','Active'),('expired','Expired')] %}
+  <li class="nav-item">
+    <a class="nav-link {% if status_filter==s[0] %}active{% endif %}"
+       href="{{ url_for('memberships', status=s[0]) }}"
+       style="{% if status_filter==s[0] %}background:#b71c1c;{% endif %}">{{ s[1] }}</a>
+  </li>
+  {% endfor %}
+</ul>
+
+<div class="card table-card">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>#</th><th>Member</th><th>Plan</th><th>Trainer</th>
+          <th>Start Date</th><th>End Date</th><th>Status</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if memberships %}
+        {% for ms in memberships %}
+        <tr>
+          <td class="text-muted">{{ loop.index }}</td>
+          <td>
+            <a href="{{ url_for('member_detail', member_id=ms.member_id) }}" class="text-decoration-none fw-600">
+              {{ ms.member_name }}
+            </a>
+          </td>
+          <td>{{ ms.plan_name }}</td>
+          <td>{{ ms.trainer_name or '<span class="text-muted">—</span>'|safe }}</td>
+          <td>{{ ms.start_date }}</td>
+          <td>{{ ms.end_date }}</td>
+          <td>
+            <span class="badge badge-{{ ms.status }} rounded-pill px-3">
+              {{ ms.status|capitalize }}
+            </span>
+          </td>
+          <td>
+            {% if ms.status == 'expired' %}
+            <form method="POST" action="{{ url_for('renew_membership', ms_id=ms.id) }}" class="d-inline">
+              <button type="submit" class="btn btn-outline-success btn-action" title="Renew">
+                <i class="bi bi-arrow-clockwise me-1"></i>Renew
+              </button>
+            </form>
+            {% else %}
+            <span class="text-muted small">Active</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr>
+          <td colspan="8">
+            <div class="empty-state">
+              <i class="bi bi-journal-check text-muted"></i>
+              <p class="text-muted">No memberships found.</p>
+              <a href="{{ url_for('add_membership') }}" class="btn btn-gym btn-sm">Add Membership</a>
+            </div>
+          </td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

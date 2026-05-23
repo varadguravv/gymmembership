@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block title %}Trainers{% endblock %}
+{% block page_title %}Trainers{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h5 class="section-title mb-0">Trainers</h5>
+    <small class="text-muted">Manage gym trainers</small>
+  </div>
+  <a href="{{ url_for('add_trainer') }}" class="btn btn-gym">
+    <i class="bi bi-person-plus-fill me-2"></i>Add Trainer
+  </a>
+</div>
+
+<div class="card table-card">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>#</th><th>Name</th><th>Specialization</th><th>Phone</th>
+          <th>Email</th><th>Active Members</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if trainers %}
+        {% for t in trainers %}
+        <tr>
+          <td class="text-muted">{{ loop.index }}</td>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <div class="admin-avatar" style="width:32px;height:32px;font-size:.75rem;background:#e3f2fd;color:#1565c0;border:none;">
+                {{ t.name[0].upper() }}
+              </div>
+              <strong>{{ t.name }}</strong>
+            </div>
+          </td>
+          <td>
+            <span class="badge bg-light text-dark border">{{ t.specialization or '—' }}</span>
+          </td>
+          <td>{{ t.phone or '—' }}</td>
+          <td class="text-muted small">{{ t.email }}</td>
+          <td>
+            <span class="badge bg-success bg-opacity-10 text-success fw-600 px-3">
+              {{ t.assigned_count }}
+            </span>
+          </td>
+          <td>
+            <a href="{{ url_for('trainer_detail', trainer_id=t.id) }}"
+               class="btn btn-outline-primary btn-action me-1" title="View">
+              <i class="bi bi-eye"></i>
+            </a>
+            <a href="{{ url_for('edit_trainer', trainer_id=t.id) }}"
+               class="btn btn-outline-warning btn-action me-1" title="Edit">
+              <i class="bi bi-pencil"></i>
+            </a>
+            <button class="btn btn-outline-danger btn-action" title="Delete"
+                    data-bs-toggle="modal" data-bs-target="#delTrainer{{ t.id }}">
+              <i class="bi bi-trash"></i>
+            </button>
+          </td>
+        </tr>
+
+        <!-- Delete Modal -->
+        <div class="modal fade" id="delTrainer{{ t.id }}" tabindex="-1">
+          <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h6 class="modal-title"><i class="bi bi-exclamation-triangle me-2"></i>Confirm Delete</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">Delete trainer <strong>{{ t.name }}</strong>?</div>
+              <div class="modal-footer">
+                <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <form method="POST" action="{{ url_for('delete_trainer', trainer_id=t.id) }}" class="d-inline">
+                  <button type="submit" class="btn btn-danger btn-sm" data-no-spinner="1">Delete</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <tr>
+          <td colspan="7">
+            <div class="empty-state">
+              <i class="bi bi-person-badge text-muted"></i>
+              <p class="text-muted">No trainers added yet.</p>
+              <a href="{{ url_for('add_trainer') }}" class="btn btn-gym btn-sm">Add First Trainer</a>
+            </div>
+          </td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

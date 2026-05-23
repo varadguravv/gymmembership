@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% block title %}Settings{% endblock %}
+{% block page_title %}Settings{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <!-- Gym Settings -->
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header d-flex align-items-center gap-2">
+        <i class="bi bi-building text-danger"></i>
+        <span>Gym Settings</span>
+      </div>
+      <div class="card-body p-4">
+        <form method="POST">
+          <input type="hidden" name="action" value="update_gym"/>
+          <div class="mb-4">
+            <label class="form-label">Gym Name <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-building"></i></span>
+              <input type="text" name="gym_name" class="form-control"
+                     value="{{ gym_name }}" required placeholder="Your Gym Name"/>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-gym px-4">
+            <i class="bi bi-save me-2"></i>Save Settings
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Change Password -->
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header d-flex align-items-center gap-2">
+        <i class="bi bi-shield-lock-fill text-danger"></i>
+        <span>Change Password</span>
+      </div>
+      <div class="card-body p-4">
+        <form method="POST">
+          <input type="hidden" name="action" value="change_password"/>
+          <div class="mb-3">
+            <label class="form-label">Current Password <span class="text-danger">*</span></label>
+            <input type="password" name="current_password" class="form-control" required
+                   placeholder="Enter current password"/>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">New Password <span class="text-danger">*</span></label>
+            <input type="password" name="new_password" class="form-control" required
+                   placeholder="Min. 6 characters" minlength="6"/>
+          </div>
+          <div class="mb-4">
+            <label class="form-label">Confirm New Password <span class="text-danger">*</span></label>
+            <input type="password" name="confirm_password" class="form-control" required
+                   placeholder="Repeat new password"/>
+          </div>
+          <button type="submit" class="btn btn-gym px-4">
+            <i class="bi bi-key me-2"></i>Change Password
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Info -->
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header d-flex align-items-center gap-2">
+        <i class="bi bi-person-circle text-danger"></i>
+        <span>Admin Info</span>
+      </div>
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <div class="admin-avatar" style="width:56px;height:56px;font-size:1.4rem;background:#b71c1c;">
+            {{ current_user.name[0].upper() }}
+          </div>
+          <div>
+            <h6 class="fw-700 mb-0">{{ current_user.name }}</h6>
+            <small class="text-muted">{{ current_user.email }}</small>
+          </div>
+        </div>
+        <div class="p-3 rounded" style="background:#fafafa;border:1px solid #eee;">
+          <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted small">Role</span>
+            <span class="badge bg-danger">Administrator</span>
+          </div>
+          <div class="d-flex justify-content-between">
+            <span class="text-muted small">Email</span>
+            <span class="small fw-500">{{ current_user.email }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- System Info -->
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header d-flex align-items-center gap-2">
+        <i class="bi bi-info-circle text-danger"></i>
+        <span>System Info</span>
+      </div>
+      <div class="card-body p-4">
+        <div class="list-group list-group-flush">
+          <div class="list-group-item d-flex justify-content-between px-0">
+            <span class="text-muted small">Application</span>
+            <span class="small fw-500">Gym Management System</span>
+          </div>
+          <div class="list-group-item d-flex justify-content-between px-0">
+            <span class="text-muted small">Version</span>
+            <span class="badge bg-success">v1.0.0</span>
+          </div>
+          <div class="list-group-item d-flex justify-content-between px-0">
+            <span class="text-muted small">Framework</span>
+            <span class="small fw-500">Flask + MySQL</span>
+          </div>
+          <div class="list-group-item d-flex justify-content-between px-0">
+            <span class="text-muted small">Gym Name</span>
+            <span class="small fw-500">{{ gym_name }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

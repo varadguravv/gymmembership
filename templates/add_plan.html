@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Edit' if edit else 'Add' }} Plan{% endblock %}
+{% block page_title %}{{ 'Edit' if edit else 'Add' }} Plan{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header d-flex align-items-center gap-2">
+        <i class="bi bi-card-list text-danger"></i>
+        <span>{{ 'Edit Plan' if edit else 'Add New Plan' }}</span>
+      </div>
+      <div class="card-body p-4">
+        <form method="POST">
+          <div class="mb-3">
+            <label class="form-label">Plan Name <span class="text-danger">*</span></label>
+            <input type="text" name="plan_name" class="form-control"
+                   value="{{ plan.plan_name if plan else '' }}" required placeholder="e.g. Premium Monthly"/>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-6">
+              <label class="form-label">Duration (Months) <span class="text-danger">*</span></label>
+              <input type="number" name="duration_months" class="form-control" min="1" max="24"
+                     value="{{ plan.duration_months if plan else '' }}" required placeholder="1"/>
+            </div>
+            <div class="col-6">
+              <label class="form-label">Price (₹) <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <span class="input-group-text">₹</span>
+                <input type="number" name="price" class="form-control" step="0.01" min="0"
+                       value="{{ plan.price if plan else '' }}" required placeholder="999.00"/>
+              </div>
+            </div>
+          </div>
+          <div class="mb-4">
+            <label class="form-label">Description</label>
+            <textarea name="description" class="form-control" rows="3"
+                      placeholder="What's included in this plan...">{{ plan.description if plan else '' }}</textarea>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-gym px-4">
+              <i class="bi bi-check-lg me-2"></i>{{ 'Update Plan' if edit else 'Add Plan' }}
+            </button>
+            <a href="{{ url_for('plans') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Edit' if edit else 'Add' }} Trainer{% endblock %}
+{% block page_title %}{{ 'Edit' if edit else 'Add' }} Trainer{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card">
+      <div class="card-header d-flex align-items-center gap-2">
+        <i class="bi bi-person-badge-fill text-danger"></i>
+        <span>{{ 'Edit Trainer' if edit else 'Add New Trainer' }}</span>
+      </div>
+      <div class="card-body p-4">
+        <form method="POST">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Full Name <span class="text-danger">*</span></label>
+              <input type="text" name="name" class="form-control"
+                     value="{{ trainer.name if trainer else '' }}" required placeholder="Trainer Name"/>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Specialization</label>
+              <input type="text" name="specialization" class="form-control"
+                     value="{{ trainer.specialization if trainer else '' }}"
+                     placeholder="e.g. Weight Training, Yoga"/>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Phone</label>
+              <input type="text" name="phone" class="form-control"
+                     value="{{ trainer.phone if trainer else '' }}" placeholder="+91 9876543210"/>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Email <span class="text-danger">*</span></label>
+              <input type="email" name="email" class="form-control"
+                     value="{{ trainer.email if trainer else '' }}" required placeholder="trainer@gym.com"/>
+            </div>
+          </div>
+          <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-gym px-4">
+              <i class="bi bi-check-lg me-2"></i>{{ 'Update Trainer' if edit else 'Add Trainer' }}
+            </button>
+            <a href="{{ url_for('trainers') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

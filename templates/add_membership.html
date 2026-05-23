@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}New Membership{% endblock %}
+{% block page_title %}New Membership{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card">
+      <div class="card-header d-flex align-items-center gap-2">
+        <i class="bi bi-journal-plus text-danger"></i>
+        <span>Add New Membership</span>
+      </div>
+      <div class="card-body p-4">
+        <form method="POST">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Member <span class="text-danger">*</span></label>
+              <select name="member_id" id="member_id" class="form-select" required>
+                <option value="">Select Member...</option>
+                {% for m in members %}
+                <option value="{{ m.id }}" {% if request.args.get('member_id')==m.id|string %}selected{% endif %}>
+                  {{ m.name }} — {{ m.phone or m.email }} ({{ m.status }})
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Plan <span class="text-danger">*</span></label>
+              <select name="plan_id" id="plan_id" class="form-select" required>
+                <option value="">Select Plan...</option>
+                {% for p in plans %}
+                <option value="{{ p.id }}">{{ p.plan_name }} — ₹{{ "%.0f"|format(p.price) }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Trainer (Optional)</label>
+              <select name="trainer_id" class="form-select">
+                <option value="">No Trainer</option>
+                {% for t in trainers %}
+                <option value="{{ t.id }}">{{ t.name }} — {{ t.specialization or 'General' }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Start Date <span class="text-danger">*</span></label>
+              <input type="date" name="start_date" id="start_date" class="form-control" required/>
+            </div>
+          </div>
+
+          <!-- Auto-calculated info -->
+          <div class="row g-3 mt-1" id="planInfo" style="display:none!important;">
+            <div class="col-md-6">
+              <div class="p-3 rounded" style="background:#fce4ec;">
+                <small class="text-muted d-block">Plan Price</small>
+                <strong class="text-danger" id="price_display">—</strong>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="p-3 rounded" style="background:#e8f5e9;">
+                <small class="text-muted d-block">End Date (Auto)</small>
+                <strong class="text-success" id="end_date_display">—</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-gym px-4">
+              <i class="bi bi-check-lg me-2"></i>Create Membership
+            </button>
+            <a href="{{ url_for('memberships') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Set today as default start date
+  document.getElementById('start_date').value = new Date().toISOString().split('T')[0];
+
+  // Show plan info when plan or date changes
+  const planInfo = document.getElementById('planInfo');
+  document.getElementById('plan_id').addEventListener('change', function() {
+    if (this.value) planInfo.style.setProperty('display', 'flex', 'important');
+    else planInfo.style.setProperty('display', 'none', 'important');
+    updatePlanInfo();
+  });
+  document.getElementById('start_date').addEventListener('change', updatePlanInfo);
+</script>
+{% endblock %}

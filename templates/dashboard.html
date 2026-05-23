@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Expiring Soon Banner -->
+{% if expiring_soon %}
+<div class="expiry-banner mb-4 d-flex align-items-start gap-3">
+  <i class="bi bi-exclamation-triangle-fill text-warning fs-4 mt-1"></i>
+  <div>
+    <strong>Memberships Expiring Soon</strong>
+    <div class="mt-1 d-flex flex-wrap gap-2">
+      {% for e in expiring_soon %}
+      <span class="badge badge-expiring rounded-pill px-3 py-2">
+        <i class="bi bi-clock me-1"></i>{{ e.name }} — {{ e.plan_name }}
+        <span class="ms-1 opacity-75">({{ e.end_date }})</span>
+      </span>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Stat Cards -->
+<div class="row g-4 mb-4">
+  <div class="col-6 col-xl-3">
+    <div class="card stat-card">
+      <div class="card-body d-flex align-items-center gap-3">
+        <div class="stat-icon" style="background:#fce4ec;">
+          <i class="bi bi-people-fill" style="color:#c62828;"></i>
+        </div>
+        <div>
+          <div class="stat-value">{{ total_members }}</div>
+          <div class="stat-label">Total Members</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-xl-3">
+    <div class="card stat-card">
+      <div class="card-body d-flex align-items-center gap-3">
+        <div class="stat-icon" style="background:#e8f5e9;">
+          <i class="bi bi-person-check-fill" style="color:#2e7d32;"></i>
+        </div>
+        <div>
+          <div class="stat-value">{{ active_members }}</div>
+          <div class="stat-label">Active Members</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-xl-3">
+    <div class="card stat-card">
+      <div class="card-body d-flex align-items-center gap-3">
+        <div class="stat-icon" style="background:#ffebee;">
+          <i class="bi bi-person-x-fill" style="color:#b71c1c;"></i>
+        </div>
+        <div>
+          <div class="stat-value">{{ expired_members }}</div>
+          <div class="stat-label">Expired Members</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-xl-3">
+    <div class="card stat-card">
+      <div class="card-body d-flex align-items-center gap-3">
+        <div class="stat-icon" style="background:#fff3e0;">
+          <i class="bi bi-hourglass-split" style="color:#e65100;"></i>
+        </div>
+        <div>
+          <div class="stat-value">{{ pending_payments }}</div>
+          <div class="stat-label">Pending Payments</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Revenue Card -->
+<div class="row g-4 mb-4">
+  <div class="col-md-4">
+    <div class="card h-100" style="background:linear-gradient(135deg,#b71c1c,#7f0000);color:#fff;">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <p class="mb-1 opacity-75 small">Monthly Revenue</p>
+            <h2 class="fw-700 mb-0">₹{{ "%.2f"|format(monthly_revenue) }}</h2>
+            <small class="opacity-75">Collected this month</small>
+          </div>
+          <div style="background:rgba(255,255,255,.15);border-radius:12px;padding:12px;">
+            <i class="bi bi-graph-up-arrow fs-3"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Latest Notices -->
+  <div class="col-md-8">
+    <div class="card h-100">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-megaphone-fill me-2 text-danger"></i>Latest Notices</span>
+        <a href="{{ url_for('notices') }}" class="btn btn-sm btn-outline-danger">View All</a>
+      </div>
+      <div class="card-body p-3">
+        {% if notices %}
+        {% for n in notices %}
+        <div class="notice-card p-3 mb-2">
+          <div class="d-flex justify-content-between">
+            <strong style="font-size:.9rem;">{{ n.title }}</strong>
+            <small class="text-muted">{{ n.posted_date.strftime('%d %b') if n.posted_date else '' }}</small>
+          </div>
+          <p class="mb-0 text-muted small mt-1">{{ n.message[:100] }}{% if n.message|length > 100 %}...{% endif %}</p>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="empty-state py-3">
+          <i class="bi bi-megaphone text-muted"></i>
+          <p class="text-muted mb-0">No notices yet.</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Payments -->
+<div class="card table-card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span><i class="bi bi-cash-coin me-2 text-danger"></i>Recent Payments</span>
+    <a href="{{ url_for('payments') }}" class="btn btn-sm btn-outline-danger">View All</a>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>Member</th><th>Plan</th><th>Amount</th><th>Date</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if recent_payments %}
+        {% for p in recent_payments %}
+        <tr>
+          <td><i class="bi bi-person-circle me-2 text-muted"></i>{{ p.member_name }}</td>
+          <td>{{ p.plan_name }}</td>
+          <td class="fw-600">₹{{ "%.2f"|format(p.amount) }}</td>
+          <td>{{ p.payment_date }}</td>
+          <td>
+            <span class="badge badge-{{ p.status }} rounded-pill px-3">
+              {{ p.status|capitalize }}
+            </span>
+          </td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr><td colspan="5" class="text-center text-muted py-4">No payments yet.</td></tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

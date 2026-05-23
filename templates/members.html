@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% block title %}Members{% endblock %}
+{% block page_title %}Members{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h5 class="section-title mb-0">All Members</h5>
+    <small class="text-muted">Manage gym members</small>
+  </div>
+  <a href="{{ url_for('add_member') }}" class="btn btn-gym">
+    <i class="bi bi-person-plus-fill me-2"></i>Add Member
+  </a>
+</div>
+
+<!-- Search + Filter -->
+<div class="card mb-4">
+  <div class="card-body py-3">
+    <form method="GET" class="row g-3 align-items-end">
+      <div class="col-md-6">
+        <label class="form-label">Search</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-search"></i></span>
+          <input type="text" name="search" class="form-control" placeholder="Name or phone..."
+                 value="{{ search }}"/>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Status Filter</label>
+        <select name="status" class="form-select">
+          <option value="all" {% if status_filter=='all' %}selected{% endif %}>All Members</option>
+          <option value="active" {% if status_filter=='active' %}selected{% endif %}>Active</option>
+          <option value="expired" {% if status_filter=='expired' %}selected{% endif %}>Expired</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-gym w-100">
+          <i class="bi bi-funnel me-1"></i>Filter
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Filter Tabs -->
+<ul class="nav nav-pills mb-3">
+  <li class="nav-item">
+    <a class="nav-link {% if status_filter=='all' %}active{% endif %}"
+       href="{{ url_for('members', status='all', search=search) }}"
+       style="{% if status_filter=='all' %}background:#b71c1c;{% endif %}">All</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {% if status_filter=='active' %}active{% endif %}"
+       href="{{ url_for('members', status='active', search=search) }}"
+       style="{% if status_filter=='active' %}background:#b71c1c;{% endif %}">Active</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {% if status_filter=='expired' %}active{% endif %}"
+       href="{{ url_for('members', status='expired', search=search) }}"
+       style="{% if status_filter=='expired' %}background:#b71c1c;{% endif %}">Expired</a>
+  </li>
+</ul>
+
+<div class="card table-card">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>#</th><th>Name</th><th>Phone</th><th>Email</th>
+          <th>Join Date</th><th>Current Plan</th><th>Expiry</th>
+          <th>Status</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if members %}
+        {% for m in members %}
+        <tr>
+          <td class="text-muted">{{ loop.index }}</td>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <div class="admin-avatar" style="width:32px;height:32px;font-size:.75rem;background:#b71c1c22;color:#b71c1c;border:none;">
+                {{ m.name[0].upper() }}
+              </div>
+              <strong>{{ m.name }}</strong>
+            </div>
+          </td>
+          <td>{{ m.phone or '—' }}</td>
+          <td class="text-muted small">{{ m.email }}</td>
+          <td>{{ m.join_date }}</td>
+          <td>{{ m.plan_name or '<span class="text-muted">None</span>'|safe }}</td>
+          <td>{{ m.end_date or '—' }}</td>
+          <td>
+            <span class="badge badge-{{ m.status }} rounded-pill px-3">
+              {{ m.status|capitalize }}
+            </span>
+          </td>
+          <td>
+            <a href="{{ url_for('member_detail', member_id=m.id) }}"
+               class="btn btn-outline-primary btn-action me-1" title="View">
+              <i class="bi bi-eye"></i>
+            </a>
+            <button class="btn btn-outline-danger btn-action" title="Delete"
+                    data-bs-toggle="modal" data-bs-target="#deleteModal{{ m.id }}">
+              <i class="bi bi-trash"></i>
+            </button>
+          </td>
+        </tr>
+
+        <!-- Delete Modal -->
+        <div class="modal fade" id="deleteModal{{ m.id }}" tabindex="-1">
+          <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h6 class="modal-title"><i class="bi bi-exclamation-triangle me-2"></i>Confirm Delete</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                Delete <strong>{{ m.name }}</strong>? This will remove all their memberships and payments.
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <form method="POST" action="{{ url_for('delete_member', member_id=m.id) }}" class="d-inline">
+                  <button type="submit" class="btn btn-danger btn-sm" data-no-spinner="1">
+                    <i class="bi bi-trash me-1"></i>Delete
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <tr>
+          <td colspan="9">
+            <div class="empty-state">
+              <i class="bi bi-people text-muted"></i>
+              <p class="text-muted">No members found.</p>
+              <a href="{{ url_for('add_member') }}" class="btn btn-gym btn-sm">Add First Member</a>
+            </div>
+          </td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

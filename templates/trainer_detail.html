@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}{{ trainer.name }}{% endblock %}
+{% block page_title %}Trainer Detail{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <a href="{{ url_for('trainers') }}" class="btn btn-outline-secondary btn-sm">
+    <i class="bi bi-arrow-left me-1"></i>Back to Trainers
+  </a>
+  <a href="{{ url_for('edit_trainer', trainer_id=trainer.id) }}" class="btn btn-outline-primary btn-sm">
+    <i class="bi bi-pencil me-1"></i>Edit Trainer
+  </a>
+</div>
+
+<div class="row g-4">
+  <div class="col-md-4">
+    <div class="card text-center p-4">
+      <div class="admin-avatar mx-auto mb-3"
+           style="width:72px;height:72px;font-size:1.8rem;background:#1565c0;border:3px solid #e3f2fd;">
+        {{ trainer.name[0].upper() }}
+      </div>
+      <h5 class="fw-700 mb-1">{{ trainer.name }}</h5>
+      <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 mb-3">
+        {{ trainer.specialization or 'General Trainer' }}
+      </span>
+      <div class="text-start">
+        <div class="d-flex align-items-center gap-2 mb-2 text-muted small">
+          <i class="bi bi-envelope"></i><span>{{ trainer.email }}</span>
+        </div>
+        <div class="d-flex align-items-center gap-2 text-muted small">
+          <i class="bi bi-phone"></i><span>{{ trainer.phone or 'Not provided' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-8">
+    <div class="card table-card">
+      <div class="card-header">
+        <i class="bi bi-people-fill me-2 text-danger"></i>
+        Assigned Members
+        <span class="badge bg-danger ms-2">{{ assigned_members|length }}</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr><th>Member</th><th>Plan</th><th>Start</th><th>End</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            {% for m in assigned_members %}
+            <tr>
+              <td>
+                <a href="{{ url_for('member_detail', member_id=m.id) }}" class="text-decoration-none fw-600">
+                  {{ m.name }}
+                </a>
+              </td>
+              <td>{{ m.plan_name }}</td>
+              <td>{{ m.start_date }}</td>
+              <td>{{ m.end_date }}</td>
+              <td>
+                <span class="badge badge-{{ m.ms_status }} rounded-pill px-3">
+                  {{ m.ms_status|capitalize }}
+                </span>
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="5">
+                <div class="empty-state py-3">
+                  <i class="bi bi-people text-muted"></i>
+                  <p class="text-muted mb-0">No members assigned yet.</p>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

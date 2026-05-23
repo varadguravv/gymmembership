@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Edit' if edit else 'Add' }} Member{% endblock %}
+{% block page_title %}{{ 'Edit' if edit else 'Add' }} Member{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card">
+      <div class="card-header d-flex align-items-center gap-2">
+        <i class="bi bi-person-{{ 'pencil' if edit else 'plus' }}-fill text-danger"></i>
+        <span>{{ 'Edit Member' if edit else 'Add New Member' }}</span>
+      </div>
+      <div class="card-body p-4">
+        <form method="POST">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Full Name <span class="text-danger">*</span></label>
+              <input type="text" name="name" class="form-control"
+                     value="{{ member.name if member else '' }}" required placeholder="John Doe"/>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Phone Number</label>
+              <input type="text" name="phone" class="form-control"
+                     value="{{ member.phone if member else '' }}" placeholder="+91 9876543210"/>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Email Address <span class="text-danger">*</span></label>
+              <input type="email" name="email" class="form-control"
+                     value="{{ member.email if member else '' }}" required placeholder="john@example.com"/>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Join Date <span class="text-danger">*</span></label>
+              <input type="date" name="join_date" class="form-control"
+                     value="{{ member.join_date if member else today }}" required/>
+            </div>
+            {% if edit %}
+            <div class="col-md-6">
+              <label class="form-label">Status</label>
+              <select name="status" class="form-select">
+                <option value="active" {% if member.status=='active' %}selected{% endif %}>Active</option>
+                <option value="expired" {% if member.status=='expired' %}selected{% endif %}>Expired</option>
+                <option value="inactive" {% if member.status=='inactive' %}selected{% endif %}>Inactive</option>
+              </select>
+            </div>
+            {% endif %}
+          </div>
+          <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-gym px-4">
+              <i class="bi bi-check-lg me-2"></i>{{ 'Update Member' if edit else 'Add Member' }}
+            </button>
+            <a href="{{ url_for('members') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const joinDate = document.querySelector('input[name="join_date"]');
+  if (joinDate && !joinDate.value) {
+    joinDate.value = new Date().toISOString().split('T')[0];
+  }
+</script>
+{% endblock %}
